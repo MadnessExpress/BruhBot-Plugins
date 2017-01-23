@@ -6,5 +6,5 @@
   "money.give_message": "The following transaction was executed:",
   "money.add_message": "Your money was increased by an admin.",
   "embed_image": "http://i.imgur.com/sKY6zDi.png",
-  "embed_color": 2125188
+  "embed_color": ""
 }

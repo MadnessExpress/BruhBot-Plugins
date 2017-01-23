@@ -8,7 +8,7 @@ module BruhBot
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      if BruhBot.conf['first_run'] == 1
+      if File.exist?('plugins/update.txt')
         BruhBot.bot.ready do |event|
           db = SQLite3::Database.new 'db/server.db'
           event.bot.servers.keys.each do |s|
@@ -38,42 +38,52 @@ module BruhBot
         db.execute('INSERT OR IGNORE INTO perms (command) VALUES (?)', 'level')
       end
       ##########################################################################
+
+      member_join do |event|
+        break if event.channel.private?
+        db = SQLite3::Database.new 'db/server.db'
+
+        user = db.execute('SELECT userid FROM levels '\
+                          'WHERE userid = (?)', event.user.id)
+
+        db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) '\
+                   'VALUES (?, ?, ?)', event.user.id, 1, 0) if user.nil?
+      end
+
       message do |event|
-        unless event.channel.private?
+        break if event.channel.private?
+        db = SQLite3::Database.new 'db/server.db'
 
-          db = SQLite3::Database.new 'db/server.db'
+        #db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) VALUES (?, ?, ?)', [event.user.id, 1, 0])
+        db.results_as_hash = true
 
-          #db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) VALUES (?, ?, ?)', [event.user.id, 1, 0])
-          db.results_as_hash = true
+        hash = db.execute('SELECT * FROM levels '\
+                          'WHERE userid = (?)', event.user.id)[0]
 
-          hash = db.execute('SELECT * FROM levels '\
-                            'WHERE userid = (?)', event.user.id)[0]
+        mlength = event.message.content.length.round_to(5)
+        totalxp = hash['xp'] + mlength
+        requiredxp = hash['level'] * 2 * 500
 
-          mlength = event.message.content.length.round_to(5)
-          totalxp = hash['xp'] + mlength
-          requiredxp = hash['level'] * 2 * 500
+        db.results_as_hash = false
 
-          db.results_as_hash = false
+        if totalxp < requiredxp
 
-          if totalxp < requiredxp
+          db.execute('UPDATE levels SET xp = (?) '\
+                     'WHERE userid = (?)', totalxp, event.user.id)
 
-            db.execute('UPDATE levels SET xp = (?) '\
-                       'WHERE userid = (?)', totalxp, event.user.id)
+        elsif totalxp >= requiredxp
 
-          elsif totalxp >= requiredxp
+          finalxp = (totalxp - requiredxp)
+          level = (hash['level'] + 1)
+          db.execute('UPDATE levels Set level = (?), xp = (?) '\
+                     'WHERE userid = (?)', level, finalxp, event.user.id)
 
-            finalxp = (totalxp - requiredxp)
-            level = (hash['level'] + 1)
-            db.execute('UPDATE levels Set level = (?), xp = (?) '\
-                       'WHERE userid = (?)', level, finalxp, event.user.id)
-
-            unless levels_config[level].nil?
-              member = event.server.member(event.user.id)
-              member.add_role(levels_config[level])
-            end
+          unless levels_config[level].nil?
+            member = event.server.member(event.user.id)
+            member.add_role(levels_config[level])
           end
-          db.close
         end
+        db.close
       end
 
       # COMMANDS

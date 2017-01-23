@@ -17,6 +17,8 @@ module BruhBot
         db.execute <<-SQL
           create table if not exists bandnames (
             name text,
+            genre text,
+            addedby int,
             UNIQUE(name)
           );
         SQL
@@ -36,18 +38,24 @@ module BruhBot
       ) do |event|
         # Load database
         db = SQLite3::Database.new 'db/server.db'
-        rows = db.execute('SELECT name FROM bandnames')
+        rows = db.execute('SELECT name, genre, addedby FROM bandnames')
         db.close if db
 
-        unless rows == []
-          output = "#{rows.sample.sample} is #{event.user.display_name}'s "\
-                   'new band name'
-        end
+        output = rows.sample unless rows == []
         output = 'There are no bands.' unless rows != []
+        user = event.bot.member(event.server.id, event.user.id).display_name
 
         event.channel.send_embed do |e|
           e.thumbnail = { url: bandnames_config['embed_image'] }
-          e.add_field name: 'Band Name:', value: output, inline: true
+          e.add_field name: 'Band Name:',
+                      value: "#{output[0]} is #{user}'s new band name",
+                      inline: false
+          e.add_field name: 'Genre:', value: output[1], inline: true
+          e.add_field name: 'Creator:',
+                      value: event.bot.member(
+                        event.server.id, output[2]
+                      ).display_name,
+                      inline: true
           e.color = bandnames_config['embed_color']
         end
       end
@@ -60,13 +68,17 @@ module BruhBot
       ) do |event, *text|
         event.message.delete
 
+        textarray = text.join(' ').split('::')
+        band = textarray[0]
+        genre = textarray[1]
+
         # Load database
         db = SQLite3::Database.new 'db/server.db'
 
         begin
           db.execute(
-            'INSERT OR IGNORE INTO bandnames (name) '\
-            'VALUES (?)', [text.join(' ')]
+            'INSERT OR IGNORE INTO bandnames (name, genre, addedby) '\
+            'VALUES (?, ?, ?)', band, genre, event.user.id
           )
         rescue SQLite3::Exception
           event.respond 'That band name already exists.'
@@ -78,9 +90,10 @@ module BruhBot
         event.channel.send_embed do |e|
           e.thumbnail = { url: bandnames_config['embed_image'] }
           e.description = 'The following band was added to the database:'
-          e.add_field name: 'Band:', value: text.join(' '), inline: false
-          e.add_field name: 'Added By:', value: event.user.display_name,
-                      inline: false
+          e.add_field name: 'Band:', value: band, inline: false
+          e.add_field name: 'Genre:', value: genre, inline: true
+          e.add_field name: 'Added By:', value: event.user.mention,
+                      inline: true
           e.color = bandnames_config['embed_color']
         end
       end
