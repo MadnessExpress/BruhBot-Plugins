@@ -2,8 +2,6 @@ module BruhBot
   module Plugins
     # Band names plugin
     module BandNames
-      require('requiredmodules.rb')
-
       extend Discordrb::Commands::CommandContainer
 
       bandnames_config = Yajl::Parser.parse(
@@ -12,22 +10,7 @@ module BruhBot
 
       if File.exist?('plugins/update.txt') &&
          BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-
-        db.execute <<-SQL
-          create table if not exists bandnames (
-            name text,
-            genre text,
-            addedby int,
-            UNIQUE(name)
-          );
-        SQL
-
-        db.execute(
-          'INSERT OR IGNORE INTO perms (command) '\
-          'VALUES (?), (?), (?)', 'band', 'band.add', 'band.remove'
-        )
-        db.close if db
+        require "#{__dir__}/database.rb"
       end
 
       command(
@@ -70,14 +53,15 @@ module BruhBot
 
         textarray = text.join(' ').split('::')
         band = textarray[0]
-        genre = textarray[1]
+        genre = textarray[1] unless textarray[1].nil?
+        genre = 'N/A' if textarray[1].nil?
 
         # Load database
         db = SQLite3::Database.new 'db/server.db'
 
         begin
           db.execute(
-            'INSERT OR IGNORE INTO bandnames (name, genre, addedby) '\
+            'INSERT INTO bandnames (name, genre, addedby) '\
             'VALUES (?, ?, ?)', band, genre, event.user.id
           )
         rescue SQLite3::Exception
