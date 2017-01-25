@@ -27,8 +27,8 @@ module BruhBot
         output = rows.sample unless rows == []
         output = 'There are no bands.' unless rows != []
         user = event.bot.member(event.server.id, event.user.id).display_name
-        response = "#{output[0]} is #{user}'s new band name" if output[1].nil?
-        response = "#{output[0]} is #{user}'s new #{output[1]} band name" unless output[1].nil?
+        response = "#{output[0]} is #{user}'s new band name." if output[1].nil?
+        response = "#{output[0]} is #{user}'s new #{output[1]} band name." unless output[1].nil?
 
         event.channel.send_embed do |e|
           e.thumbnail = { url: bandnames_config['embed_image'] }
