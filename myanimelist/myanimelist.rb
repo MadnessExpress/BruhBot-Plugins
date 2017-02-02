@@ -8,8 +8,8 @@ module BruhBot
       extend Discordrb::Commands::CommandContainer
 
       MyAnimeList.configure do |config|
-        config.username = BruhBot.api['myanimelist_user']
-        config.password = BruhBot.api['myanimelist_pass']
+        config.username = BruhBot.api['myanime_list_user']
+        config.password = BruhBot.api['myanime_list_pass']
       end
 
       command(
