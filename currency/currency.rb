@@ -6,52 +6,37 @@ module BruhBot
       extend Discordrb::Commands::CommandContainer
 
       require 'rounding'
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+      if BruhBot.conf['first_run'] == 1 ||
+         BruhBot.db_version < BruhBot.git_db_version
+        require "#{__dir__}/database.rb"
+      end
 
       currency_config = Yajl::Parser.parse(
         File.new("#{__dir__}/config.json", 'r')
       )
-
-      if BruhBot.conf['first_run'] == 1
-        BruhBot.bot.ready do |event|
-          db = SQLite3::Database.new 'db/server.db'
-          event.bot.servers.keys.each do |s|
-            event.bot.server(s).members.each do |m|
-              db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) '\
-                         'VALUES (?, ?, ?)', [m.id, 1, 0])
-            end
-          end
-          db.close if db
-        end
-      end
 ################################################################################
-
-      if File.exist?('plugins/update.txt') && BruhBot::Plugins.const_defined?(:Permissions)
+      BruhBot.bot.ready do |event|
         db = SQLite3::Database.new 'db/server.db'
+        event.bot.servers.keys.each do |s|
+          event.bot.server(s).members.each do |m|
+            db.execute('INSERT OR IGNORE INTO currency (userid, amount) '\
+                       'VALUES (?, ?)', m.id, 100)
+          end
+        end
+        db.close if db
+      end
 
-        db.execute <<-SQL
-          create table if not exists currency (
-            userid int,
-            amount int,
-            UNIQUE(userid)
-          );
-        SQL
-
-        db.execute('INSERT OR IGNORE INTO perms (command) '\
-                   'VALUES (?), (?), (?)', 'money', 'money.give', 'money.add')
-
-      elsif BruhBot.conf['first_run'] == 1
+      member_join do |event|
         db = SQLite3::Database.new 'db/server.db'
-
         db.execute('INSERT OR IGNORE INTO currency (userid, amount) '\
                    'VALUES (?, ?)', event.user.id, 100)
+        db.close if db
       end
-################################################################################
 
       message do |event|
         unless event.channel.private?
           db = SQLite3::Database.new 'db/server.db'
-          db.execute('INSERT OR IGNORE INTO currency (userid, amount) '\
-                     'VALUES (?, ?)', event.user.id, 100)
 
           amount = db.execute('SELECT amount FROM currency '\
                               'WHERE userid = (?)', event.user.id)[0][0]
@@ -68,7 +53,7 @@ module BruhBot
 
       command(
         :money, max_args: 0,
-        permitted_roles: [],
+        permitted_roles: money_roles,
         description: 'See how much money you have.',
         usage: 'money'
       ) do |event|
@@ -98,7 +83,7 @@ module BruhBot
 
       command(
         %s(money.give), min_args: 2, max_args: 2,
-        permitted_roles: [],
+        permitted_roles: money_give_roles,
         descriptions: 'Give money to a designated person.',
         usage: 'givemoney <amount> <usermention>'
       ) do |event, amountgiven, user|
@@ -164,7 +149,7 @@ module BruhBot
 
       command(
         %s(money.add), min_args: 2, max_args: 2,
-        permitted_roles: [],
+        permitted_roles: money_add_roles,
         descriptions: 'Add money to a designated person.',
         usage: 'givemoney <amount> <usermention>'
       ) do |event, amountgiven, user|

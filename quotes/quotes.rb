@@ -2,7 +2,11 @@ module BruhBot
   module Plugins
     # Quotes Plugin
     module Quotes
-      require('requiredmodules.rb')
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+      if BruhBot.conf['first_run'] == 1 ||
+         BruhBot.db_version < BruhBot.git_db_version
+        require "#{__dir__}/database.rb"
+      end
 
       # Load config file
       quotes_config = Yajl::Parser.parse(
@@ -11,25 +15,9 @@ module BruhBot
 
       extend Discordrb::Commands::CommandContainer
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-
-        db.execute <<-SQL
-          create table if not exists quotes (
-            quote text,
-            UNIQUE(quote)
-          );
-        SQL
-
-        db.execute('INSERT OR IGNORE INTO perms (command) '\
-                   'VALUES (?), (?), (?)', 'quote', 'quote.add', 'quote.remove')
-        db.close if db
-      end
-
       command(
         :quote, max_args: 0,
-        permitted_roles: [],
+        permitted_roles: quote_roles,
         description: 'Output a random quote, or manage quotes.',
         usage: 'quote'
       ) do |event|
@@ -50,13 +38,11 @@ module BruhBot
 
       command(
         %s(quote.add), min_args: 1,
-        permitted_roles: [],
+        permitted_roles: quote_add_roles,
         description: 'Add a quote to your quote database.',
         usage: 'quote.add <text>'
       ) do |event, *text|
         event.message.delete
-
-        Required.logs('command', event.user.username, event.user.id, event.message) unless quotes_config['logging'] != 1
 
         begin
           db = SQLite3::Database.new 'db/server.db'
@@ -79,13 +65,12 @@ module BruhBot
 
       command(
         %s(quote.remove), min_args: 1,
-        permitted_roles: [],
+        permitted_roles: quote_remove_roles,
         description: 'Remove a quote from your quote database.',
         usage: 'quote.remove <text>'
       ) do |event, *text|
         event.message.delete
 
-        Required.logs('command', event.user.username, event.user.id, event.message) unless quotes_config['logging'] != 1
         db = SQLite3::Database.new 'db/server.db'
         check = db.execute('SELECT count(*) FROM quotes '\
                            'WHERE quote = ?', text.join(' '))[0][0]

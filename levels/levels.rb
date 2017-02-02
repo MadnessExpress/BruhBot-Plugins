@@ -2,53 +2,38 @@ module BruhBot
   module Plugins
     # Leveling plugin
     module Levels
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+      if BruhBot.conf['first_run'] == 1 ||
+         BruhBot.db_version < BruhBot.git_db_version
+        require "#{__dir__}/database.rb"
+      end
+
       extend Discordrb::EventContainer
 
       levels_config = Yajl::Parser.parse(
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      if File.exist?('plugins/update.txt')
-        BruhBot.bot.ready do |event|
-          db = SQLite3::Database.new 'db/server.db'
-          event.bot.servers.keys.each do |s|
-            event.bot.server(s).members.each do |m|
-              db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) '\
-                         'VALUES (?, ?, ?)', m.id, 1, 0)
-            end
-          end
-          db.close if db
-        end
-      end
-
-      ##########################################################################
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
+      BruhBot.bot.ready do |event|
         db = SQLite3::Database.new 'db/server.db'
-
-        db.execute <<-SQL
-            create table if not exists levels (
-              userid int,
-              level int,
-              xp int,
-              UNIQUE(userid)
-            );
-        SQL
-
-        db.execute('INSERT OR IGNORE INTO perms (command) VALUES (?)', 'level')
+        event.bot.servers.keys.each do |s|
+          event.bot.server(s).members.each do |m|
+            db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) '\
+                       'VALUES (?, ?, ?)', m.id, 1, 0)
+          end
+        end
+        db.close if db
       end
-      ##########################################################################
 
       member_join do |event|
         break if event.channel.private?
         db = SQLite3::Database.new 'db/server.db'
 
-        user = db.execute('SELECT userid FROM levels '\
-                          'WHERE userid = (?)', event.user.id)
-
         db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) '\
-                   'VALUES (?, ?, ?)', event.user.id, 1, 0) if user.nil?
+                   'VALUES (?, ?, ?)', event.user.id, 1, 0)
       end
+
+      ##########################################################################
 
       message do |event|
         break if event.channel.private?
@@ -83,7 +68,7 @@ module BruhBot
             member.add_role(levels_config[level])
           end
         end
-        db.close
+        db.close if db
       end
 
       # COMMANDS
@@ -92,15 +77,12 @@ module BruhBot
 
       command(
         :level, max_args: 0,
-        permitted_roles: [],
+        permitted_roles: level_roles,
         description: 'Check your level',
         usage: 'level'
       ) do |event|
         break event.respond BruhBot.conf['dm_error'] if event.channel.private?
         db = SQLite3::Database.new 'db/server.db'
-
-        db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) '\
-                   'VALUES (?, ?, ?)', event.user.id, 1, 0)
         level = db.execute('SELECT level FROM levels '\
                            'WHERE userid = (?)', event.user.id)[0][0]
         event.respond("Your level is #{level}")

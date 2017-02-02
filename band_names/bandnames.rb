@@ -4,18 +4,19 @@ module BruhBot
     module BandNames
       extend Discordrb::Commands::CommandContainer
 
+      if BruhBot.conf['first_run'] == 1 ||
+         BruhBot.db_version < BruhBot.git_db_version
+        require "#{__dir__}/database.rb"
+      end
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+
       bandnames_config = Yajl::Parser.parse(
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        require "#{__dir__}/database.rb"
-      end
-
       command(
         :band, min_args: 0,
-        permitted_roles: [],
+        permitted_roles: band_roles,
         description: 'Display a random band name.',
         usage: 'band'
       ) do |event|
@@ -44,7 +45,7 @@ module BruhBot
 
       command(
         %s(band.add), min_args: 1,
-        permitted_roles: [],
+        permitted_roles: band_add_roles,
         description: 'Add a band name to the database.',
         usage: 'band add <text>'
       ) do |event, *text|
@@ -83,7 +84,7 @@ module BruhBot
 
       command(
         %s(band.remove), min_args: 1,
-        permitted_roles: [],
+        permitted_roles: band_remove_roles,
         description: 'Remove a band from your quote database.',
         usage: 'band.remove <text>'
       ) do |event, *text|

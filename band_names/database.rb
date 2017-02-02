@@ -1,12 +1,15 @@
 db = SQLite3::Database.new 'db/server.db'
-db.execute <<-SQL
-  create table if not exists bandnames (
-    name text,
-    genre text,
-    addedby int,
-    UNIQUE(name)
-  );
-SQL
+
+if BruhBot.conf['first_run'] == 1
+  db.execute <<-SQL
+    create table if not exists bandnames (
+      name text,
+      genre text,
+      addedby int,
+      UNIQUE(name)
+    );
+  SQL
+end
 
 query = [
   'ALTER TABLE bandnames ADD COLUMN name text, UNIQUE(name)',
@@ -21,8 +24,4 @@ query.each do |q|
   end
 end
 
-db.execute(
-  'INSERT OR IGNORE INTO perms (command) '\
-  'VALUES (?), (?), (?)', 'band', 'band.add', 'band.remove'
-)
 db.close if db

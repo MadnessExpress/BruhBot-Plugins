@@ -2,6 +2,7 @@ module BruhBot
   module Plugins
     # Play plugin
     module Play
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       # Load config file
@@ -9,21 +10,15 @@ module BruhBot
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) VALUES (?)', 'play')
-      end
-
       command(
         :play, min_args: 2,
-        permitted_roles: [],
+        permitted_roles: play_roles,
         description: 'Invite groups to play a game.',
         usage: 'play <gamename>, <groupname>'
       ) do |event, *text|
         event.message.delete
 
-        # Convert array into string and back into an array separating game name 
+        # Convert array into string and back into an array separating game name
         # and groups/people with a comma.
         infoarray = text.join(' ').split(', ')
 

@@ -4,6 +4,7 @@ module BruhBot
     module Myanimelist
       require 'myanimelist'
       require "#{__dir__}/regexmap.rb"
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       MyAnimeList.configure do |config|
@@ -11,16 +12,9 @@ module BruhBot
         config.password = BruhBot.api['myanimelist_pass']
       end
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) '\
-                   'VALUES (?), (?)', 'anime', 'manga')
-      end
-
       command(
         :anime, min_args: 1,
-        permitted_roles: [],
+        permitted_roles: anime_roles,
         desc: 'Search for an anime.',
         usage: 'anime <search terms>'
       ) do |event, *query|
@@ -60,7 +54,7 @@ module BruhBot
 
       command(
         :manga, min_args: 1,
-        permitted_roles: [],
+        permitted_roles: manga_roles,
         desc: 'Search for a Manga.',
         usage: 'manga <search terms>'
       ) do |event, *query|

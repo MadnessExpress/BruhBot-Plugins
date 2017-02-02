@@ -3,6 +3,7 @@ module BruhBot
     # Dice roller plugin
     module Diceroller
       require 'rounding'
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
 
       extend Discordrb::Commands::CommandContainer
 
@@ -11,15 +12,9 @@ module BruhBot
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) '\
-                   'VALUES (?), (?), (?), (?)', 'roll', 'roll.mod', 'roll.fudge', 'coin')
-      end
-
       command(
         :roll, max_args: 1,
+        permitted_roles: roll_roles,
         description: 'Rolls a die or dice',
         usage: 'roll <text>'
       ) do |event, dice|
@@ -53,7 +48,7 @@ module BruhBot
 
       command(
         %s(roll.mod), min_args: 3, max_args: 3,
-        required_roles: [],
+        permitted_roles: roll_mod_roles,
         parameters: diceroller_conf['symbols'],
         description: 'Rolls dice with a modifier',
         usage: 'roll <dice> <symbol> <modifier>'
@@ -79,7 +74,7 @@ module BruhBot
 
       command(
         %s(roll.fudge), max_args: 0,
-        required_roles: [],
+        permitted_roles: roll_fudge_roles,
         description: 'Rolls fudge dice',
         usage: 'fudge'
       ) do |event|
@@ -93,6 +88,7 @@ module BruhBot
 
       command(
         :coin, max_args: 0,
+        permitted_roles: coin_roles,
         description: 'Flip a coin'
       ) do |event|
         # Output an option from the coin array in the config.

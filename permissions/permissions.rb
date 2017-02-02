@@ -2,31 +2,21 @@ module BruhBot
   module Plugins
     # Permissions plugin
     module Permissions
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+      if BruhBot.conf['first_run'] == 1 ||
+         BruhBot.db_version < BruhBot.git_db_version
+        require "#{__dir__}/database.rb"
+      end
+
       extend Discordrb::Commands::CommandContainer
 
       permissions_config = Yajl::Parser.parse(
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      if File.exist?('plugins/update.txt')
-        db = SQLite3::Database.new 'db/server.db'
-
-        db.execute <<-SQL
-          create table if not exists perms (
-            command text,
-            roles text,
-            UNIQUE(command)
-          );
-        SQL
-
-        db.execute('INSERT OR IGNORE INTO perms (command) '\
-                   'VALUES (?), (?), (?), (?)', 'perm',\
-                   'perm.list', 'perm.add', 'perm.remove')
-      end
-
       command(
         :perm, min_args: 1,
-        permitted_roles: [],
+        permitted_roles: perm_roles,
         description: 'View role/roles permission for a command',
         usage: 'perm <command>'
       ) do |event, command|
@@ -54,7 +44,7 @@ module BruhBot
 
       command(
         %s(perm.list), max_args: 0,
-        permitted_roles: [],
+        permitted_roles: perm_list_roles,
         description: 'View role/roles permission for a command',
         usage: 'perm <command>'
       ) do |event|
@@ -78,7 +68,7 @@ module BruhBot
 
       command(
         %s(perm.add), min_args: 2,
-        permitted_roles: [],
+        permitted_roles: perm_add_roles,
         description: 'Give a role/roles permission to use a command',
         usage: 'perm.add <command> <role/roles>'
       ) do |event, command, *roles|
@@ -116,7 +106,7 @@ module BruhBot
 
       command(
         %s(perm.remove), min_args: 2,
-        permitted_roles: [],
+        permitted_roles: perm_remove_roles,
         description: 'Remove permissions from a command.',
         usage: 'perm.remove <command> <role1> <role2> <role3> <role4>'
       ) do |event, command, *roles|

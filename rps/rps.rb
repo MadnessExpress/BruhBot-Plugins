@@ -2,6 +2,7 @@ module BruhBot
   module Plugins
     # Rock paper scissors plugin
     module Rps
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       # Load config file
@@ -9,16 +10,9 @@ module BruhBot
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) VALUES (?)', 'rps')
-        db.close if db
-      end
-
       command(
         :rps, min_args: 1,
-        permitted_roles: [],
+        permitted_roles: rps_roles,
         description: 'Play rock, paper, scissors with the bot.',
         usage: 'rps rock, rps paper, or rps scissors'
       ) do |event|

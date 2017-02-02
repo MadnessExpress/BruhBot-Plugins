@@ -4,18 +4,13 @@ module BruhBot
     module Choose
       extend Discordrb::Commands::CommandContainer
 
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+
       # Load choose config file
       choose_conf = Yajl::Parser.parse(File.new("#{__dir__}/config.json", 'r'))
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) VALUES (?)', 'choose')
-      end
-
       command(
-        :choose, min_args: 2, permitted_roles: [],
+        :choose, min_args: 2, permitted_roles: choose_roles,
         description: 'Make the bot choose something randomly.',
         usage: 'choose <choice>, <choice>'
       ) do |event, *choices|

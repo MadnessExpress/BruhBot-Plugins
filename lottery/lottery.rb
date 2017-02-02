@@ -2,6 +2,8 @@ module BruhBot
   module Plugins
     # Lottery plugin
     module Lottery
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+
       extend Discordrb::Commands::CommandContainer
 
       # The variables below load up when the bot is started so that they
@@ -14,17 +16,9 @@ module BruhBot
       # The user that started the lottery.
       startuser = ''
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) '\
-                   'VALUES (?), (?), (?), (?)', 'lotto.start', 'lotto.enter',
-                   'lotto.end', 'lotto.kill')
-      end
-
       command(
         %s(lotto.start), max_args: 0,
-        permitted_roles: [],
+        permitted_roles: lotto_start_roles,
         description: 'Start a lottery.',
         usage: '!lotto.start'
       ) do |event|
@@ -41,7 +35,7 @@ module BruhBot
 
       command(
         %s(lotto.enter), max_args: 0,
-        permitted_roles: [],
+        permitted_roles: lotto_enter_roles,
         description: 'Enter a lottery.',
         usage: '!lotto.enter'
       ) do |event|
@@ -57,7 +51,7 @@ module BruhBot
 
       command(
         %s(lotto.end), max_args: 0,
-        permitted_roles: [],
+        permitted_roles: lotto_end_roles,
         description: 'End a lottery.',
         usage: '!lotto.end'
       ) do |event|
@@ -76,7 +70,7 @@ module BruhBot
 
       command(
         %s(lotto.kill), max_args: 0,
-        permitted_roles: [],
+        permitted_roles: lotto_kill_roles,
         description: 'Kill a lottery.',
         usage: '!lotto.kill'
       ) do |event|

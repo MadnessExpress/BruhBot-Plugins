@@ -2,6 +2,7 @@ module BruhBot
   module Plugins
     # Plugin to make the bot say stuff
     module Say
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       # Load config file
@@ -9,16 +10,9 @@ module BruhBot
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) '\
-                   'VALUES (?), (?)', 'say', 'say.channel')
-      end
-
       command(
         :say, min_args: 1,
-        permitted_roles: [],
+        permitted_roles: say_roles,
         description: 'Make the bot say stuff.',
         usage: 'say <stuff>'
       ) do |event, *message|
@@ -28,7 +22,7 @@ module BruhBot
 
       command(
         %s(say.channel), min_args: 2,
-        permitted_roles: [],
+        permitted_roles: say_channel_roles,
         description: 'Send a message to another channel.',
         usage: 'say.channel <channel name> <message>'
       ) do |event, channel, *message|

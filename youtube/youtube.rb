@@ -3,18 +3,12 @@ module BruhBot
     # Youtube plugin
     module Youtube
       require 'yourub'
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
-
-      if File.exist?('plugins/update.txt')
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) '\
-                   'VALUES (?)', 'youtube')
-        db.close if db
-      end
 
       command(
         :youtube, min_args: 1,
-        permitted_roles: [],
+        permitted_roles: youtube_roles,
         desc: 'Search for a Youtube video.',
         usage: 'youtube <search terms>'
       ) do |event, *query|

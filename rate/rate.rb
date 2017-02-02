@@ -2,18 +2,12 @@ module BruhBot
   module Plugins
     # Rate plugin
     module Rate
+      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
-
-      if File.exist?('plugins/update.txt') &&
-         BruhBot::Plugins.const_defined?(:Permissions)
-        db = SQLite3::Database.new 'db/server.db'
-        db.execute('INSERT OR IGNORE INTO perms (command) VALUES (?)', 'rate')
-        db.close if db
-      end
 
       command(
         :rate, min_args: 1,
-        permitted_roles: [],
+        permitted_roles: rate_roles,
         description: 'Rate things!',
         usage: 'rate <stuff>'
       ) do |event, *text|
