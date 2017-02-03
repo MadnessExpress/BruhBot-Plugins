@@ -8,7 +8,7 @@ module Roles
 
   if BruhBot.conf['first_run'] == 1 ||
      BruhBot.db_version < BruhBot.git_db_version
-    db.execute('INSERT OR IGNORE INTO perms (command) VALUES (?)', 'avatar')
+    db.execute('INSERT OR IGNORE INTO perms (command) VALUES (?)', 'avatar', 'avatar.server')
   end
 
   avatar_string = db.execute(
