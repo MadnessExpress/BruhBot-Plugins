@@ -3,7 +3,7 @@ module BruhBot
     # Wikipedia plugin
     module WikipediaPlugin
       require 'wikipedia'
-      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+      require './roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
       command(
         :wiki, min_args: 1,

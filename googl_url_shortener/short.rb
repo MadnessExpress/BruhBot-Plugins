@@ -3,7 +3,7 @@ module BruhBot
     # URL shortener plugin
     module Short
       require 'googl'
-      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+      require './roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
 
       extend Discordrb::Commands::CommandContainer
 

@@ -2,7 +2,7 @@ module BruhBot
   module Plugins
     # Permissions plugin
     module Permissions
-      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+      require './roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       if BruhBot.conf['first_run'] == 1 ||
          BruhBot.db_version < BruhBot.git_db_version
         require "#{__dir__}/database.rb"

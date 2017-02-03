@@ -2,7 +2,7 @@ module BruhBot
   module Plugins
     # Play plugin
     module Play
-      require 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
+      require './roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       # Load config file
