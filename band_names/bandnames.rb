@@ -28,8 +28,8 @@ module BruhBot
         output = rows.sample unless rows == []
         output = 'There are no bands.' unless rows != []
         user = event.bot.member(event.server.id, event.user.id).display_name
-        response = "#{output[0]} is #{user}'s new band name." if output[1].nil?
-        response = "#{output[0]} is #{user}'s new #{output[1]} band name." unless output[1].nil?
+        response = "#{output[0]} is #{user}'s new band name." if output[1].nil? || output.empty?
+        response = "#{output[0]} is #{user}'s new #{output[1]} band name." unless output[1].nil? || output.empty?
 
         event.channel.send_embed do |e|
           e.thumbnail = { url: bandnames_config['embed_image'] }
@@ -54,7 +54,7 @@ module BruhBot
         textarray = text.join(' ').split('::')
         band = textarray[0]
         genre = textarray[1] unless textarray[1].nil?
-        genre = 'N/A' if textarray[1].nil?
+        genre = nil if textarray[1].nil?
 
         # Load database
         db = SQLite3::Database.new 'db/server.db'
@@ -68,8 +68,9 @@ module BruhBot
           event.respond 'That band name already exists.'
           break
         end
-
         db.close if db
+
+        genre = 'N/A' if genre.nil?
 
         event.channel.send_embed do |e|
           e.thumbnail = { url: bandnames_config['embed_image'] }
