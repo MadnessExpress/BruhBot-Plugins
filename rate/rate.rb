@@ -7,7 +7,7 @@ module BruhBot
 
       command(
         :rate, min_args: 1,
-        permitted_roles: rate_roles,
+        permitted_roles: Roles.rate_roles,
         description: 'Rate things!',
         usage: 'rate <stuff>'
       ) do |event, *text|

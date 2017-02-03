@@ -8,7 +8,7 @@ module BruhBot
 
       command(
         :youtube, min_args: 1,
-        permitted_roles: youtube_roles,
+        permitted_roles: Roles.youtube_roles,
         desc: 'Search for a Youtube video.',
         usage: 'youtube <search terms>'
       ) do |event, *query|

@@ -7,7 +7,7 @@ module BruhBot
 
       command(
         :avatar, min_args: 1, max_args: 1,
-        permitted_roles: avatar_roles,
+        permitted_roles: Roles.avatar_roles,
         description: 'Fetches a user\'s avatar.'
       ) do |event, arg|
         parse = event.bot.parse_mention(arg)
@@ -17,7 +17,7 @@ module BruhBot
 
       command(
         %s(avatar.server), max_args: 0,
-        permitted_roles: avatar_server_roles,
+        permitted_roles: Roles.avatar_server_roles,
         description: 'Fetches a server\'s avatar.'
       ) do |event|
         event.respond event.server.icon_url

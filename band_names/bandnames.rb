@@ -16,7 +16,7 @@ module BruhBot
 
       command(
         :band, min_args: 0,
-        permitted_roles: band_roles,
+        permitted_roles: Roles.band_roles,
         description: 'Display a random band name.',
         usage: 'band'
       ) do |event|
@@ -45,7 +45,7 @@ module BruhBot
 
       command(
         %s(band.add), min_args: 1,
-        permitted_roles: band_add_roles,
+        permitted_roles: Roles.band_add_roles,
         description: 'Add a band name to the database.',
         usage: 'band add <text>'
       ) do |event, *text|
@@ -84,7 +84,7 @@ module BruhBot
 
       command(
         %s(band.remove), min_args: 1,
-        permitted_roles: band_remove_roles,
+        permitted_roles: Roles.band_remove_roles,
         description: 'Remove a band from your quote database.',
         usage: 'band.remove <text>'
       ) do |event, *text|

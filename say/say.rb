@@ -12,7 +12,7 @@ module BruhBot
 
       command(
         :say, min_args: 1,
-        permitted_roles: say_roles,
+        permitted_roles: Roles.say_roles,
         description: 'Make the bot say stuff.',
         usage: 'say <stuff>'
       ) do |event, *message|
@@ -22,7 +22,7 @@ module BruhBot
 
       command(
         %s(say.channel), min_args: 2,
-        permitted_roles: say_channel_roles,
+        permitted_roles: Roles.say_channel_roles,
         description: 'Send a message to another channel.',
         usage: 'say.channel <channel name> <message>'
       ) do |event, channel, *message|

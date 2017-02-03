@@ -17,7 +17,7 @@ module BruhBot
 
       command(
         :quote, max_args: 0,
-        permitted_roles: quote_roles,
+        permitted_roles: Roles.quote_roles,
         description: 'Output a random quote, or manage quotes.',
         usage: 'quote'
       ) do |event|
@@ -38,7 +38,7 @@ module BruhBot
 
       command(
         %s(quote.add), min_args: 1,
-        permitted_roles: quote_add_roles,
+        permitted_roles: Roles.quote_add_roles,
         description: 'Add a quote to your quote database.',
         usage: 'quote.add <text>'
       ) do |event, *text|
@@ -65,7 +65,7 @@ module BruhBot
 
       command(
         %s(quote.remove), min_args: 1,
-        permitted_roles: quote_remove_roles,
+        permitted_roles: Roles.quote_remove_roles,
         description: 'Remove a quote from your quote database.',
         usage: 'quote.remove <text>'
       ) do |event, *text|

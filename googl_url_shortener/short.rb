@@ -9,7 +9,7 @@ module BruhBot
 
       command(
         :short, min_args: 1, max_args: 1,
-        permitted_roles: short_roles,
+        permitted_roles: Roles.short_roles,
         description: 'Shorten a URL with Googl.',
         usage: 'short <URL>'
       ) do |event, url|

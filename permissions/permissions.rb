@@ -16,7 +16,7 @@ module BruhBot
 
       command(
         :perm, min_args: 1,
-        permitted_roles: perm_roles,
+        permitted_roles: Roles.perm_roles,
         description: 'View role/roles permission for a command',
         usage: 'perm <command>'
       ) do |event, command|
@@ -44,7 +44,7 @@ module BruhBot
 
       command(
         %s(perm.list), max_args: 0,
-        permitted_roles: perm_list_roles,
+        permitted_roles: Roles.perm_list_roles,
         description: 'View role/roles permission for a command',
         usage: 'perm <command>'
       ) do |event|
@@ -68,7 +68,7 @@ module BruhBot
 
       command(
         %s(perm.add), min_args: 2,
-        permitted_roles: perm_add_roles,
+        permitted_roles: Roles.perm_add_roles,
         description: 'Give a role/roles permission to use a command',
         usage: 'perm.add <command> <role/roles>'
       ) do |event, command, *roles|
@@ -106,7 +106,7 @@ module BruhBot
 
       command(
         %s(perm.remove), min_args: 2,
-        permitted_roles: perm_remove_roles,
+        permitted_roles: Roles.perm_remove_roles,
         description: 'Remove permissions from a command.',
         usage: 'perm.remove <command> <role1> <role2> <role3> <role4>'
       ) do |event, command, *roles|

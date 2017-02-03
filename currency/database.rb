@@ -1,3 +1,4 @@
+db = SQLite3::Database.new 'db/server.db'
 if BruhBot.conf['first_run'] == 1
   db.execute <<-SQL
     create table if not exists currency (

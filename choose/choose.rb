@@ -10,7 +10,8 @@ module BruhBot
       choose_conf = Yajl::Parser.parse(File.new("#{__dir__}/config.json", 'r'))
 
       command(
-        :choose, min_args: 2, permitted_roles: choose_roles,
+        :choose, min_args: 2,
+        permitted_roles: Roles.choose_roles,
         description: 'Make the bot choose something randomly.',
         usage: 'choose <choice>, <choice>'
       ) do |event, *choices|

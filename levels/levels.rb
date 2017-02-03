@@ -77,7 +77,7 @@ module BruhBot
 
       command(
         :level, max_args: 0,
-        permitted_roles: level_roles,
+        permitted_roles: Roles.level_roles,
         description: 'Check your level',
         usage: 'level'
       ) do |event|

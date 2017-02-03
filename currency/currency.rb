@@ -53,7 +53,7 @@ module BruhBot
 
       command(
         :money, max_args: 0,
-        permitted_roles: money_roles,
+        permitted_roles: Roles.money_roles,
         description: 'See how much money you have.',
         usage: 'money'
       ) do |event|
@@ -83,7 +83,7 @@ module BruhBot
 
       command(
         %s(money.give), min_args: 2, max_args: 2,
-        permitted_roles: money_give_roles,
+        permitted_roles: Roles.money_give_roles,
         descriptions: 'Give money to a designated person.',
         usage: 'givemoney <amount> <usermention>'
       ) do |event, amountgiven, user|
@@ -149,7 +149,7 @@ module BruhBot
 
       command(
         %s(money.add), min_args: 2, max_args: 2,
-        permitted_roles: money_add_roles,
+        permitted_roles: Roles.money_add_roles,
         descriptions: 'Add money to a designated person.',
         usage: 'givemoney <amount> <usermention>'
       ) do |event, amountgiven, user|

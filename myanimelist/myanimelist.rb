@@ -14,7 +14,7 @@ module BruhBot
 
       command(
         :anime, min_args: 1,
-        permitted_roles: anime_roles,
+        permitted_roles: Roles.anime_roles,
         desc: 'Search for an anime.',
         usage: 'anime <search terms>'
       ) do |event, *query|
@@ -54,7 +54,7 @@ module BruhBot
 
       command(
         :manga, min_args: 1,
-        permitted_roles: manga_roles,
+        permitted_roles: Roles.manga_roles,
         desc: 'Search for a Manga.',
         usage: 'manga <search terms>'
       ) do |event, *query|
