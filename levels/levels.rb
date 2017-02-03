@@ -4,7 +4,7 @@ module BruhBot
     module Levels
       require_relative 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       if BruhBot.conf['first_run'] == 1 ||
-         BruhBot.db_version < BruhBot.git_db_version
+         BruhBot.db_version < BruhBot.git_db_version['version']
         require "#{__dir__}/database.rb"
       end
 
