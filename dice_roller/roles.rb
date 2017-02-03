@@ -1,4 +1,4 @@
-module roles
+module Roles
   class << self
     attr_accessor :roll_roles
     attr_accessor :roll_mod_roles
