@@ -20,6 +20,7 @@ module BruhBot
         description: 'Display a random band name.',
         usage: 'band'
       ) do |event|
+
         # Load database
         db = SQLite3::Database.new 'db/server.db'
         rows = db.execute('SELECT name, genre, addedby FROM bandnames')
@@ -31,13 +32,17 @@ module BruhBot
         response = "#{output[0]} is #{user}'s new band name." if output[1].nil? || output.empty?
         response = "#{output[0]} is #{user}'s new #{output[1]} band name." unless output[1].nil? || output.empty?
 
+        if output[2].to_s.numeric?
+          creator = event.bot.member(event.server.id, output[2].to_i).display_name
+        else
+          creator = output[2]
+        end
+
         event.channel.send_embed do |e|
           e.thumbnail = { url: bandnames_config['embed_image'] }
           e.add_field name: 'Band Name:', value: response, inline: false
           e.add_field name: 'Creator:',
-                      value: event.bot.member(
-                        event.server.id, output[2]
-                      ).display_name,
+                      value: creator,
                       inline: true
           e.color = bandnames_config['embed_color']
         end
@@ -47,22 +52,27 @@ module BruhBot
         %s(band.add), min_args: 1,
         permitted_roles: Roles.band_add_roles,
         description: 'Add a band name to the database.',
-        usage: 'band add <text>'
+        usage: 'band add <text> :: optional<genre> :: optional<plaintext added by name>'
       ) do |event, *text|
         event.message.delete
 
         textarray = text.join(' ').split('::')
-        band = textarray[0]
-        genre = textarray[1] unless textarray[1].nil?
-        genre = nil if textarray[1].nil?
+        band = textarray[0].strip
+        genre = textarray[1].strip unless textarray[1].nil? || textarray[1] == ' '
+        genre = nil if textarray[1].nil? || textarray[1] == ' '
+        user = textarray[2].strip unless textarray[2].nil?
+        user = event.user.id if textarray[2].nil?
 
+        puts band
+        puts genre
+        puts user
         # Load database
         db = SQLite3::Database.new 'db/server.db'
 
         begin
           db.execute(
             'INSERT INTO bandnames (name, genre, addedby) '\
-            'VALUES (?, ?, ?)', band, genre, event.user.id
+            'VALUES (?, ?, ?)', band, genre, user
           )
         rescue SQLite3::Exception
           event.respond 'That band name already exists.'
@@ -77,7 +87,7 @@ module BruhBot
           e.description = 'The following band was added to the database:'
           e.add_field name: 'Band:', value: band, inline: false
           e.add_field name: 'Genre:', value: genre, inline: true
-          e.add_field name: 'Added By:', value: event.user.mention,
+          e.add_field name: 'Added By:', value: user,
                       inline: true
           e.color = bandnames_config['embed_color']
         end

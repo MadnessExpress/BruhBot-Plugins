@@ -14,7 +14,7 @@ end
 query = [
   'ALTER TABLE bandnames ADD COLUMN name text, UNIQUE(name)',
   'ALTER TABLE bandnames ADD COLUMN genre text',
-  'ALTER TABLE bandnames ADD COLUMN addedby int'
+  'ALTER TABLE bandnames ADD COLUMN addedby text'
 ]
 query.each do |q|
   begin
