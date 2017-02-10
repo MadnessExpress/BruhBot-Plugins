@@ -9,8 +9,10 @@ module BruhBot
         File.new("#{__dir__}/config.json", 'r')
       )
 
+      apikey = false if BruhBot.api['twitch'].nil? || BruhBot.api['twitch'].empty?
+
       Twitch.configure do |config|
-        config.client_id = BruhBot.api['twitch']
+        config.client_id = BruhBot.api['twitch'] unless apikey == false
       end
 
       chanid = twitch_notifications_config['notification_channel']
@@ -18,6 +20,7 @@ module BruhBot
       streaming = []
 
       BruhBot.bot.ready do |event|
+        break puts "No Twitch API key" if apikey == false
         loop do
           twitch_notifications_config['users'].each do |u|
             user = Twitch.channels.get(u)
