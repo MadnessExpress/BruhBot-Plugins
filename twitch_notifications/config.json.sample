@@ -1,0 +1,11 @@
+{
+  "users": [
+    "Twitch User Goes Here"
+  ],
+  "notification_channel": "",
+  "notification_server": "",
+  "check_interval": 300,
+  "stream_on_image": "http://i.imgur.com/9azy5Fa.png",
+  "stream_off_image": "http://i.imgur.com/2A1Uum3.png",
+  "embed_color": ""
+}
