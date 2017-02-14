@@ -2,14 +2,14 @@ module BruhBot
   module Plugins
     # Cleverbot plugin
     module CleverbotPlugin
-      require 'ruby_cleverbot'
+      require 'cleverbotrb'
 
       extend Discordrb::EventContainer
 
       # On bot mention.
       mention do |event|
         # Connect to Cleverbot
-        cleverbot = RubyCleverbot.new()
+        cleverbot = Cleverbot.new
 
         # Scrubbed message
         message = event.message.content.gsub(/<@192334740651638784>/, '')
@@ -19,7 +19,7 @@ module BruhBot
         end
 
         # Sumbit message to Cleverbot minus the mention and output the response.
-        event.respond cleverbot.send_message(message)
+        event.respond cleverbot.send(message)
       end
       # End bot mention event.
     end
