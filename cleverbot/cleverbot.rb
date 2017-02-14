@@ -9,7 +9,7 @@ module BruhBot
       # On bot mention.
       mention do |event|
         # Connect to Cleverbot
-        cleverbot = RubyCleverbot.new
+        cleverbot = RubyCleverbot.new()
 
         # Scrubbed message
         message = event.message.content.gsub(/<@192334740651638784>/, '')
