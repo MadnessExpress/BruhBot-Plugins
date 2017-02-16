@@ -21,14 +21,13 @@ module BruhBot
 
       BruhBot.bot.ready do |event|
         loop do
-          break puts "No Twitch API key" if apikey == false
+          break puts 'No Twitch API key' if apikey == false
           twitch_notifications_config['users'].each do |u|
             user = Twitch.channels.get(u)
             stream = user.streaming?
             msg = ''
             game = 'N/A'
             channel = 'N/A'
-            puts stream
 
             if user.streaming? &&
                !streaming.include?(u)
