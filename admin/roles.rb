@@ -13,10 +13,10 @@ module Roles
   db = SQLite3::Database.new 'db/server.db'
 
   if BruhBot.conf['first_run'] == 1 ||
-     BruhBot.db_version < BruhBot.git_db_version['version']
+     BruhBot.db_version < BruhBot.git_db_version
     db.execute(
       'INSERT OR IGNORE INTO perms (command) '\
-      'VALUES (?), (?), (?), (?), (?), (?), (?), (?)',
+      'VALUES (?), (?), (?), (?), (?), (?), (?), (?), (?)',
       'bot.avatar', 'update', 'restart', 'shutdown', 'nick',
       'nick.user', 'game', 'clear', 'roles'
     )
