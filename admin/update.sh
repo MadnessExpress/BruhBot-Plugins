@@ -5,10 +5,10 @@ if [ "$1" = "restart" ]; then
 	echo "###############################"
   ./bot.rb
 elif [ "$1" = "update" ]; then
-  cd ../
 	git pull
-  cd ../
+  cd plugins
   git pull
+  cd ../
 	./bot.rb
 else
 	echo "Nothing happened."

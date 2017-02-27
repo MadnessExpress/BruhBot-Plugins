@@ -11,6 +11,22 @@ module BruhBot
       ##########################################################################
 
       command(
+        %s(bot.avatar), min_args: 1, max_args: 1,
+        permitted_roles: Roles.bot_avatar_roles,
+        description: "Update the bot's avatar.",
+        usage: "bot.avatar <image url>"
+      ) do |event, arg|
+        open(arg) do |f|
+          File.open('avatars/bot.png', 'wb') do |file|
+            file.puts f.read
+          end
+        end
+        bot.profile.avatar = File.open('avatars/bot.png', 'r')
+        File.delete('avatars/bot.png')
+        nil
+      end
+
+      command(
         :update, min_args: 0, max_args: 0,
         permitted_roles: Roles.update_roles,
         description: 'Update the bot.',
@@ -46,17 +62,6 @@ module BruhBot
 
         event.respond admin_conf['shutdownmessage'].sample
         event.bot.stop
-      end
-
-      command(
-        :nick, min_args: 1,
-        permitted_roles: Roles.nick_roles,
-        description: 'Change your nickname.',
-        usage: 'nick <text>'
-      ) do |event, *nick|
-        nick = nick.join(' ')
-        event.bot.member(event.server.id, event.user.id).nick = nick
-        nil
       end
 
       command(
