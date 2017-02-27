@@ -13,9 +13,11 @@ module BruhBot
       command(
         %s(bot.avatar), min_args: 1, max_args: 1,
         permitted_roles: Roles.bot_avatar_roles,
-        description: "Update the bot's avatar.",
-        usage: "bot.avatar <image url>"
+        description: 'Update the bot\'s avatar.',
+        usage: 'bot.avatar <image url>'
       ) do |event, arg|
+        break if (BruhBot.conf['server_protection'] == 1) &&
+                 (!BruhBot.conf['owners'].include? event.user.id)
         open(arg) do |f|
           File.open('avatars/bot.png', 'wb') do |file|
             file.puts f.read
