@@ -23,7 +23,7 @@ module BruhBot
             file.puts f.read
           end
         end
-        bot.profile.avatar = File.open('avatars/bot.png', 'r')
+        BruhBot.bot.profile.avatar = File.open('avatars/bot.png', 'r')
         File.delete('avatars/bot.png')
         nil
       end
