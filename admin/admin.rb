@@ -4,8 +4,6 @@ module BruhBot
     module Admin
       extend Discordrb::Commands::CommandContainer
 
-      require_relative 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
-
       # Load config file
       admin_conf = Yajl::Parser.parse(File.new("#{__dir__}/config.json", 'r'))
       ##########################################################################

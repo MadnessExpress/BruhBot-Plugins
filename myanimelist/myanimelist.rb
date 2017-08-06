@@ -4,7 +4,6 @@ module BruhBot
     module Myanimelist
       require 'myanimelist'
       require "#{__dir__}/regexmap.rb"
-      require_relative 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       MyAnimeList.configure do |config|

@@ -6,11 +6,6 @@ module BruhBot
       extend Discordrb::Commands::CommandContainer
 
       require 'rounding'
-      require_relative 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
-      if BruhBot.conf['first_run'] == 1 ||
-         BruhBot.db_version < BruhBot.git_db_version
-        require "#{__dir__}/database.rb"
-      end
 
       currency_config = Yajl::Parser.parse(
         File.new("#{__dir__}/config.json", 'r')

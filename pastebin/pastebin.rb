@@ -3,7 +3,6 @@ module BruhBot
     # Pastebin plugin
     module Paste
       require 'pastebin-api'
-      require_relative 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       command(

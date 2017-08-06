@@ -3,7 +3,6 @@ module BruhBot
     # Avatar plugin
     module Avatar
       extend Discordrb::Commands::CommandContainer
-      require_relative 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
 
       command(
         :avatar, min_args: 1, max_args: 1,

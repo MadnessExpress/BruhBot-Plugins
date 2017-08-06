@@ -2,7 +2,6 @@ module BruhBot
   module Plugins
     # Plugin to make the bot say stuff
     module Say
-      require_relative 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       # Load config file

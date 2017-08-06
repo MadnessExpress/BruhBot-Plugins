@@ -2,7 +2,6 @@ module BruhBot
   module Plugins
     # Rate plugin
     module Rate
-      require_relative 'roles.rb' if BruhBot::Plugins.const_defined?(:Permissions)
       extend Discordrb::Commands::CommandContainer
 
       command(
