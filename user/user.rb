@@ -27,14 +27,13 @@ module BruhBot
         usage: 'nick.random'
       ) do |event|
 
-        name = user_conf['names'].sample
-
-        nick = "#{name}#{name} #{name}#{name}"
-        if nick.length > 32
-          nick = "#{name}#{name} #{name}#{name}"
-        else
-          event.bot.member(event.server.id, event.user.id).nick = nick
+        firstName = "#{user_conf['names'].sample}#{user_conf['names'].sample}"
+        lastName = "#{user_conf['names'].sample}#{user_conf['names'].sample}"
+        nick = "#{firstName} #{lastName}"
+        while nick.length > 32 do
+          nick = "#{firstName} #{lastName}"
         end
+        event.bot.member(event.server.id, event.user.id).nick = nick
         nil
       end
     end
