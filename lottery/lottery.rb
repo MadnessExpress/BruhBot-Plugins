@@ -17,7 +17,6 @@ module BruhBot
 
       command(
         %s(lotto.start), max_args: 0,
-        permitted_roles: Roles.lotto_start_roles,
         description: 'Start a lottery.',
         usage: '!lotto.start'
       ) do |event|
@@ -34,7 +33,6 @@ module BruhBot
 
       command(
         %s(lotto.enter), max_args: 0,
-        permitted_roles: Roles.lotto_enter_roles,
         description: 'Enter a lottery.',
         usage: '!lotto.enter'
       ) do |event|
@@ -50,7 +48,6 @@ module BruhBot
 
       command(
         %s(lotto.end), max_args: 0,
-        permitted_roles: Roles.lotto_end_roles,
         description: 'End a lottery.',
         usage: '!lotto.end'
       ) do |event|
@@ -69,7 +66,6 @@ module BruhBot
 
       command(
         %s(lotto.kill), max_args: 0,
-        permitted_roles: Roles.lotto_kill_roles,
         description: 'Kill a lottery.',
         usage: '!lotto.kill'
       ) do |event|

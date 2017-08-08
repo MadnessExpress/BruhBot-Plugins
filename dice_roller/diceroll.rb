@@ -13,7 +13,6 @@ module BruhBot
 
       command(
         :roll, max_args: 1,
-        permitted_roles: Roles.roll_roles,
         description: 'Rolls a die or dice',
         usage: 'roll <text>'
       ) do |event, dice|
@@ -47,7 +46,6 @@ module BruhBot
 
       command(
         %s(roll.mod), min_args: 3, max_args: 3,
-        permitted_roles: Roles.roll_mod_roles,
         parameters: diceroller_conf['symbols'],
         description: 'Rolls dice with a modifier',
         usage: 'roll <dice> <symbol> <modifier>'
@@ -73,21 +71,19 @@ module BruhBot
 
       command(
         %s(roll.fudge), max_args: 0,
-        permitted_roles: Roles.roll_fudge_roles,
         description: 'Rolls fudge dice',
         usage: 'fudge'
       ) do |event|
         # Output a roll of fudge dice from the array in the config.
-        event.respond 'You rolled the following fudge dice: (:game_die:'\
-                      "#{diceroller_conf['fudge'].sample}, :game_die:"\
-                      "#{diceroller_conf['fudge'].sample}, :game_die:"\
-                      "#{diceroller_conf['fudge'].sample}, :game_die:"\
+        event.respond 'You rolled the following fudge dice: ('\
+                      "#{diceroller_conf['fudge'].sample}, "\
+                      "#{diceroller_conf['fudge'].sample}, "\
+                      "#{diceroller_conf['fudge'].sample}, "\
                       "#{diceroller_conf['fudge'].sample})"
       end
 
       command(
         :coin, max_args: 0,
-        permitted_roles: Roles.coin_roles,
         description: 'Flip a coin'
       ) do |event|
         # Output an option from the coin array in the config.

@@ -10,7 +10,6 @@ module BruhBot
 
       command(
         %s(bot.avatar), min_args: 1, max_args: 1,
-        permitted_roles: Roles.bot_avatar_roles,
         description: 'Update the bot\'s avatar.',
         usage: 'bot.avatar <image url>'
       ) do |event, arg|
@@ -28,7 +27,6 @@ module BruhBot
 
       command(
         :update, min_args: 0, max_args: 0,
-        permitted_roles: Roles.update_roles,
         description: 'Update the bot.',
         usage: 'update'
       ) do |event|
@@ -41,7 +39,6 @@ module BruhBot
 
       command(
         :restart, min_args: 0, max_args: 0,
-        permitted_roles: Roles.restart_roles,
         description: 'Restart the bot.',
         usage: 'restart'
       ) do |event|
@@ -54,7 +51,6 @@ module BruhBot
 
       command(
         :shutdown,
-        permitted_roles: Roles.shutdown_roles,
         help_available: false
       ) do |event|
         break if (BruhBot.conf['server_protection'] == 1) &&
@@ -66,7 +62,6 @@ module BruhBot
 
       command(
         %s(nick.user), min_args: 2,
-        permitted_roles: Roles.nick_user_roles,
         description: 'Change a user\'s nickname.',
         usage: 'nick <user id> <text>'
       ) do |event, userid, *nick|
@@ -80,7 +75,6 @@ module BruhBot
 
       command(
         :game, min_args: 1,
-        permitted_roles: Roles.game_roles,
         description: 'sets bot game'
       ) do |event, *game|
         break if (BruhBot.conf['server_protection'] == 1) &&
@@ -92,7 +86,6 @@ module BruhBot
 
       command(
         :clear, min_args: 1, max_args: 1,
-        permitted_roles: Roles.clear_roles,
         description: 'Prune X messages from channel'
       ) do |event, number|
         break if (BruhBot.conf['server_protection'] == 1) &&
@@ -108,7 +101,6 @@ module BruhBot
 
       command(
         :roles, min_args: 0, max_args: 0,
-        permitted_roles: Roles.roles_roles,
         description: 'Get info on all the roles on the server.'
       ) do |event|
         roles = event.server.roles

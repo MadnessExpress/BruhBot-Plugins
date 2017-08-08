@@ -9,20 +9,9 @@ module BruhBot
         File.new("#{__dir__}/config.json", 'r')
       )
 
-      BruhBot.bot.ready do |event|
-        db = SQLite3::Database.new 'db/server.db'
-        event.bot.servers.keys.each do |s|
-          event.bot.server(s).members.each do |m|
-            db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) '\
-                       'VALUES (?, ?, ?)', m.id, 1, 0)
-          end
-        end
-        db.close if db
-      end
-
       member_join do |event|
         break if event.channel.private?
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
 
         db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) '\
                    'VALUES (?, ?, ?)', event.user.id, 1, 0)
@@ -32,7 +21,7 @@ module BruhBot
 
       message do |event|
         break if event.channel.private?
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
 
         #db.execute('INSERT OR IGNORE INTO levels (userid, level, xp) VALUES (?, ?, ?)', [event.user.id, 1, 0])
         db.results_as_hash = true
@@ -72,12 +61,11 @@ module BruhBot
 
       command(
         :level, max_args: 0,
-        permitted_roles: Roles.level_roles,
         description: 'Check your level',
         usage: 'level'
       ) do |event|
         break event.respond BruhBot.conf['dm_error'] if event.channel.private?
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
         level = db.execute('SELECT level FROM levels '\
                            'WHERE userid = (?)', event.user.id)[0][0]
         event.respond("Your level is #{level}")
@@ -87,12 +75,11 @@ module BruhBot
 
       command(
         %s(level.user), max_args: 1, min_args: 1,
-        permitted_roles: Roles.level_user_roles,
         description: 'Check a user\'s level',
         usage: 'level.user userid'
       ) do |event, userid|
         break event.respond BruhBot.conf['dm_error'] if event.channel.private?
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
         level = db.execute('SELECT level FROM levels '\
                            'WHERE userid = (?)', userid)[0][0]
         event.message.delete

@@ -11,7 +11,6 @@ module BruhBot
 
       command(
         :rps, min_args: 1,
-        permitted_roles: Roles.rps_roles,
         description: 'Play rock, paper, scissors with the bot.',
         usage: 'rps rock, rps paper, or rps scissors'
       ) do |event|

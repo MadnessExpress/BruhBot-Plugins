@@ -11,7 +11,6 @@ module BruhBot
 
       command(
         %s(8ball), min_args: 1,
-        permitted_roles: Roles.eightball_roles,
         description: 'Consult the magic 8ball',
         usage: '8ball <question>'
       ) do |event|

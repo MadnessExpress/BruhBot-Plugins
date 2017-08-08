@@ -10,13 +10,12 @@ module BruhBot
 
       command(
         :band, min_args: 0,
-        permitted_roles: Roles.band_roles,
         description: 'Display a random band name.',
         usage: 'band'
       ) do |event|
 
         # Load database
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
         rows = db.execute('SELECT name, genre, addedby FROM bandnames')
         db.close if db
 
@@ -44,7 +43,6 @@ module BruhBot
 
       command(
         %s(band.add), min_args: 1,
-        permitted_roles: Roles.band_add_roles,
         description: 'Add a band name to the database.',
         usage: 'band add <text> :: optional<genre> :: optional<plaintext added by name>'
       ) do |event, *text|
@@ -61,7 +59,7 @@ module BruhBot
         puts genre
         puts user
         # Load database
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
 
         begin
           db.execute(
@@ -89,13 +87,13 @@ module BruhBot
 
       command(
         %s(band.remove), min_args: 1,
-        permitted_roles: Roles.band_remove_roles,
         description: 'Remove a band from your quote database.',
         usage: 'band.remove <text>'
       ) do |event, *text|
+        break if !BruhBot.conf['owners'].include? event.user.id
         event.message.delete
 
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
         check = db.execute('SELECT count(*) FROM bandnames '\
                            'WHERE name = ?', [text.join(' ')])[0][0]
         break event.respond 'That band doesn\'t exist.' unless check == 1

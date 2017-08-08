@@ -6,7 +6,6 @@ module BruhBot
       extend Discordrb::Commands::CommandContainer
       command(
         :wiki, min_args: 1,
-        permitted_roles: Roles.wiki_roles,
         description: 'Look up a page on wikipedia',
         usage: 'wiki <topic>'
       ) do |event, *topic|

@@ -7,7 +7,6 @@ module BruhBot
 
       command(
         :paste, min_args: 1,
-        permitted_roles: Roles.paste_roles,
         description: 'Creates a Pastebin paste with the specified text.',
         usage: 'paste <text>'
       ) do |event, *text|

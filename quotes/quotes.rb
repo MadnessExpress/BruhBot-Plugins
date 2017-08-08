@@ -12,12 +12,11 @@ module BruhBot
 
       command(
         :quote, max_args: 0,
-        permitted_roles: Roles.quote_roles,
         description: 'Output a random quote, or manage quotes.',
         usage: 'quote'
       ) do |event|
         # Load database
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
         rows = db.execute('SELECT quote FROM quotes')
         db.close if db
 
@@ -33,14 +32,13 @@ module BruhBot
 
       command(
         %s(quote.add), min_args: 1,
-        permitted_roles: Roles.quote_add_roles,
         description: 'Add a quote to your quote database.',
         usage: 'quote.add <text>'
       ) do |event, *text|
         event.message.delete
 
         begin
-          db = SQLite3::Database.new 'db/server.db'
+          db = SQLite3::Database.new "db/#{event.server.id}.db"
           db.execute('INSERT INTO quotes (quote) VALUES (?)', [text.join(' ')])
           db.close if db
         rescue SQLite3::Exception => e
@@ -60,13 +58,13 @@ module BruhBot
 
       command(
         %s(quote.remove), min_args: 1,
-        permitted_roles: Roles.quote_remove_roles,
         description: 'Remove a quote from your quote database.',
         usage: 'quote.remove <text>'
       ) do |event, *text|
+        break if !BruhBot.conf['owners'].include? event.user.id
         event.message.delete
 
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
         check = db.execute('SELECT count(*) FROM quotes '\
                            'WHERE quote = ?', text.join(' '))[0][0]
         break event.respond 'That quote doesn\'t exist.' unless check == 1

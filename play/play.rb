@@ -11,7 +11,6 @@ module BruhBot
 
       command(
         :play, min_args: 2,
-        permitted_roles: Roles.play_roles,
         description: 'Invite groups to play a game.',
         usage: 'play <gamename>, <groupname>'
       ) do |event, *text|

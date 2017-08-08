@@ -9,7 +9,6 @@ module BruhBot
 
       command(
         :choose, min_args: 2,
-        permitted_roles: Roles.choose_roles,
         description: 'Make the bot choose something randomly.',
         usage: 'choose <choice>, <choice>'
       ) do |event, *choices|

@@ -11,19 +11,8 @@ module BruhBot
         File.new("#{__dir__}/config.json", 'r')
       )
 ################################################################################
-      BruhBot.bot.ready do |event|
-        db = SQLite3::Database.new 'db/server.db'
-        event.bot.servers.keys.each do |s|
-          event.bot.server(s).members.each do |m|
-            db.execute('INSERT OR IGNORE INTO currency (userid, amount) '\
-                       'VALUES (?, ?)', m.id, 100)
-          end
-        end
-        db.close if db
-      end
-
       member_join do |event|
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
         db.execute('INSERT OR IGNORE INTO currency (userid, amount) '\
                    'VALUES (?, ?)', event.user.id, 100)
         db.close if db
@@ -31,7 +20,7 @@ module BruhBot
 
       message do |event|
         unless event.channel.private?
-          db = SQLite3::Database.new 'db/server.db'
+          db = SQLite3::Database.new "db/#{event.server.id}.db"
 
           amount = db.execute('SELECT amount FROM currency '\
                               'WHERE userid = (?)', event.user.id)[0][0]
@@ -48,14 +37,13 @@ module BruhBot
 
       command(
         :money, max_args: 0,
-        permitted_roles: Roles.money_roles,
         description: 'See how much money you have.',
         usage: 'money'
       ) do |event|
 
         break event.respond 'You can\'t use this feature in a dm' if event.channel.private?
 
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
         db.execute('INSERT OR IGNORE INTO currency (userid, amount) '\
                     'VALUES (?, ?)', event.user.id, 100)
 
@@ -78,12 +66,11 @@ module BruhBot
 
       command(
         %s(money.give), min_args: 2, max_args: 2,
-        permitted_roles: Roles.money_give_roles,
         descriptions: 'Give money to a designated person.',
         usage: 'givemoney <amount> <usermention>'
       ) do |event, amountgiven, user|
         break event.respond 'You can\'t use this feature in a dm' if event.channel.private?
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
 
         currency = db.execute('SELECT amount FROM currency '\
                               'WHERE userid = (?)', event.user.id)[0][0]
@@ -97,7 +84,7 @@ module BruhBot
         db.close if db
 
         if (event.user.id != cleanuser.to_i) && (currency >= amountgiven.to_i.round_to(5)) && /\A\d+\z/.match(amountgiven) && /\A\d+\z/.match(cleanuser)
-          db = SQLite3::Database.new 'db/server.db'
+          db = SQLite3::Database.new "db/#{event.server.id}.db"
 
           amount = currency - amountgiven.to_i.round_to(5)
 
@@ -144,14 +131,13 @@ module BruhBot
 
       command(
         %s(money.add), min_args: 2, max_args: 2,
-        permitted_roles: Roles.money_add_roles,
         descriptions: 'Add money to a designated person.',
         usage: 'givemoney <amount> <usermention>'
       ) do |event, amountgiven, user|
         break event.respond 'You can\'t use this feature in a dm' if event.channel.private?
         break unless BruhBot.conf['owners'].include? event.user.id
         event.message.delete
-        db = SQLite3::Database.new 'db/server.db'
+        db = SQLite3::Database.new "db/#{event.server.id}.db"
 
         cleanuser = user.gsub(/<@!?(\d+)>/) { |s| event.bot.user($1.to_i).on(event.server).id }
         currency = db.execute('SELECT amount FROM currency '\
