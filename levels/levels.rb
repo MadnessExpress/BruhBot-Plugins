@@ -81,6 +81,26 @@ module BruhBot
         level = db.execute('SELECT level FROM levels '\
                            'WHERE userid = (?)', event.user.id)[0][0]
         event.respond("Your level is #{level}")
+        db.close if db
+        nil
+      end
+
+      command(
+        %s(level.user), max_args: 1, min_args: 1,
+        permitted_roles: Roles.level_user_roles,
+        description: 'Check a user\'s level',
+        usage: 'level.user userid'
+      ) do |event, userid|
+        break event.respond BruhBot.conf['dm_error'] if event.channel.private?
+        db = SQLite3::Database.new 'db/server.db'
+        level = db.execute('SELECT level FROM levels '\
+                           'WHERE userid = (?)', userid)[0][0]
+        event.message.delete
+        event.user.pm(
+          "#{event.bot.member(event.server.id, userid).display_name}'s level is #{level}"
+        )
+        db.close if db
+        nil
       end
     end
   end
