@@ -4,9 +4,11 @@ module BruhBot
     module WhoIsXl
       extend Discordrb::Commands::CommandContainer
 
-      xlnames = Yajl::Parser.parse(
-        File.new("#{__dir__}/xlnames.json", 'r')
-      )
+      if File.exists?("#{__dir__}/xlnames.json")
+        xlnames = Yajl::Parser.parse(
+          File.new("#{__dir__}/xlnames.json", 'r')
+        )
+      end
 
       xl_config = Yajl::Parser.parse(
         File.new("#{__dir__}/config.json", 'r')

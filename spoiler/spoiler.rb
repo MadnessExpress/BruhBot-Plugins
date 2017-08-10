@@ -10,6 +10,7 @@ module BruhBot
         usage: 'choose <spoiler name> :: <spoiler text>'
       ) do |event, *args|
         # Create an image with text
+        event.message.delete
         textarray = args.join(' ').split('::')
         break event.respond 'Command usage: ``` !spoiler Harry Potter :: Hagrid is a giant ```' if textarray[0] == nil || textarray[1] == nil
 
@@ -17,7 +18,7 @@ module BruhBot
         text = "(Hover to reveal #{name} spoiler)"
         text2 = textarray[1]
 
-        text = reformat_wrapped(text, 60)
+        text = reformat_wrapped(text, 60) + '      '
         text2 = reformat_wrapped(text2, 60)
 
         createSpoiler(text, text2, event.message.id)
