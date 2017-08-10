@@ -12,7 +12,7 @@ module BruhBot
         description: 'Slap someone.',
         usage: 'slap <user>'
       ) do |event, user|
-
+        event.message.delete
         # Output a message from the choicemessage array in the config file,
         # and insert a random choice from the ones provided
         event.message.delete
@@ -26,7 +26,7 @@ module BruhBot
         description: 'Get a random nickname',
         usage: 'nick.random'
       ) do |event|
-
+        event.message.delete
         firstName = "#{user_conf['names'].sample}#{user_conf['names'].sample}"
         lastName = "#{user_conf['names'].sample}#{user_conf['names'].sample}"
         nick = "#{firstName} #{lastName}"
