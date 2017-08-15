@@ -13,11 +13,12 @@ module BruhBot
       ) do |event|
         event.message.delete
         channel = event.user.voice_channel
-        event.respond 'I have joined a voice channel'
         # Check if channel is valid.
         if !channel || channel == event.server.afk_channel
           next 'First join a valid voice channel.'
         end
+
+        event.respond 'I have joined a voice channel'
 
         # Try to join the voice channel.
         begin
@@ -50,10 +51,11 @@ module BruhBot
         event.message.delete
         songname = name.join(' ')
         path = ''
+        youtube = ['youtube', 'youtu.be']
 
         if url.include? '.mp3'
           path = url
-        elsif url.include? 'youtube'
+        elsif youtube.any? { |word| url.include?(word) }
           path = "data/#{event.server.id}/music/#{event.message.id}.mp3"
           addYoutube(event.server.id, event.message.id, url)
         end
